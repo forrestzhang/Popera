@@ -188,6 +188,8 @@ def wigwritte(sampleinfors, kernellength, nthreads):
 
             par['kernellength'] = kernellength
 
+            par['maxscore'] = maxscore
+
             pars.append(par)
 
         pool = Pool(nthreads)
@@ -228,6 +230,8 @@ def wigwritter(par):
 
         kernellength = par['kernellength']
 
+        maxscore = par['maxscore']
+
         bamfile = sampleinfor.datafile
 
         wigfilename = sampleinfor.samplename+".wig"
@@ -257,6 +261,10 @@ def wigwritter(par):
             for site in sorted(smoothedscore['score'].keys()):
 
                 score = smoothedscore['score'][site]/samplenormalizedratio
+
+                if score > maxscore:
+
+                    score = maxscore
 
                 print (str(site)+"\t"+str(score), file=wigio)
 
