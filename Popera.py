@@ -77,7 +77,7 @@ def get_optparser():
 
     poperaopt.add_option("-b", "--bandwidth", dest="bw", type="int", help="kernel smooth band width, should >1, default=50", default=200)
 
-    poperaopt.add_option("-t", "--threshold", dest="threshold", type="float", help="Hot spots threshold, default=4.0", default=4.0)
+    poperaopt.add_option("-t", "--threshold", dest="threshold", type="float", help="Hot spots threshold, default=4.0", default=5.0)
 
     poperaopt.add_option("-l", "--minlength", dest="minlength", type="int", help="minimum length of hot spots, default=5", default= 50)
 
