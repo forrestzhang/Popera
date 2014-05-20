@@ -14,7 +14,7 @@
 
 **Author: Tao Zhang @ UW-Madison**
 
-
+####Example: python ~/Popera/Popera_multisample.py -d DH_sample1.bam,DH_sample2.bam -n sample1,sample2
 
 ####Options:
 
