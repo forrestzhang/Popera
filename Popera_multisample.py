@@ -141,13 +141,7 @@ def nocontrol(opt):
 
     if wig:
 
-        threadsforwig = 2
-
-        if nthreads > 5:
-
-            threadsforwig = 4
-
-        wigwritte(sampleinfors=sampleinfors, kernellength=bw, nthreads=threadsforwig)
+        wigwritte(sampleinfors=sampleinfors, kernellength=bw, nthreads=nthreads)
 
 def get_optparser():
 
