@@ -277,6 +277,8 @@ def wigwritter(par):
 
                         score = maxscore
 
+                    score = round(score, 3)
+
                     print (str(site)+"\t"+str(score), file=wigio)
 
         wigio.close()
