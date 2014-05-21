@@ -188,7 +188,7 @@ def wigwritte(sampleinfors, kernellength, nthreads):
 
             par['kernellength'] = kernellength
 
-            par['maxscore'] = maxscore
+            par['maxscore'] = maxscore/samplenormalizedratio
 
             pars.append(par)
 
@@ -248,25 +248,36 @@ def wigwritter(par):
 
         for chromosome in sampleinfor.fregion.count_chr:
 
-            chrregion = chromosome+":"+str(1)+"-"+str(sampleinfor.fregion.chrs_length[chromosome])
-
-            smoothedscore = regionsmooth(bamfile=bamfile, region=chrregion,
-                                         chr_length=sampleinfor.fregion.chrs_length[chromosome],
-                                         kernelsize=kernellength)
-
             print('track type=wiggle_0 name="',sampleinfor.samplename,'" description="', sampleinfor.samplename,'"',sep='',file=wigio)
 
             print('variableStep	chrom=', chromosome, sep='', file=wigio)
 
-            for site in sorted(smoothedscore['score'].keys()):
+            # chrregion = chromosome+":"+str(1)+"-"+str(sampleinfor.fregion.chrs_length[chromosome])
+            for scare in range(0, int(sampleinfor.fregion.chrs_length[chromosome]/1000000)+1):
 
-                score = smoothedscore['score'][site]/samplenormalizedratio
+                startsite = scare * 1000000 + 1
 
-                if score > maxscore:
+                endsite = (scare + 1) * 1000000
 
-                    score = maxscore
+                if endsite > sampleinfor.fregion.chrs_length[chromosome]:
 
-                print (str(site)+"\t"+str(score), file=wigio)
+                    endsite = sampleinfor.fregion.chrs_length[chromosome]
+
+                regionnow = chromosome+":" + str(startsite) + "-" + str(endsite)
+
+                smoothedscore = regionsmooth(bamfile=bamfile, region=regionnow,
+                                             chr_length=sampleinfor.fregion.chrs_length[chromosome],
+                                             kernelsize=kernellength)
+
+                for site in sorted(smoothedscore['score'].keys()):
+
+                    score = smoothedscore['score'][site]/samplenormalizedratio
+
+                    if score > maxscore:
+
+                        score = maxscore
+
+                    print (str(site)+"\t"+str(score), file=wigio)
 
         wigio.close()
 

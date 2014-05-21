@@ -11,72 +11,80 @@ class KeyboardInterruptError(Exception):
 
 def regionsmooth(bamfile, region, chr_length, kernelsize):
 
-    chromosome, sesite = region.split(':')
+    try:
 
-    startsite, endsite = sesite.split('-')
+        chromosome, sesite = region.split(':')
 
-    startsite = int(startsite)
+        startsite, endsite = sesite.split('-')
 
-    endsite = int(endsite)
+        startsite = int(startsite)
 
-    renewstart = startsite - kernelsize*2
+        endsite = int(endsite)
 
-    renewend = endsite + kernelsize*2
+        renewstart = startsite - kernelsize*2
 
-    if renewstart < 1:
+        renewend = endsite + kernelsize*2
 
-        renewstart = 1
+        if renewstart < 1:
 
-    if renewend > chr_length:
+            renewstart = 1
 
-        renewend = chr_length
+        if renewend > chr_length:
 
-    renewlength = renewend - renewstart + 1
+            renewend = chr_length
 
-    # smoothed_score = np.repeat(0, renewlength)
+        renewlength = renewend - renewstart + 1
 
-    resizeregion = chromosome+":"+str(renewstart)+"-"+str(renewend)
+        # smoothed_score = np.repeat(0, renewlength)
 
-    dhsinglecount = dhsinglereadscounter(bamfile=bamfile, region=resizeregion)
+        resizeregion = chromosome+":"+str(renewstart)+"-"+str(renewend)
 
-    kernelnow = smooth_kernel(kernelsize)
+        dhsinglecount = dhsinglereadscounter(bamfile=bamfile, region=resizeregion)
 
-    readcount = list()
+        kernelnow = smooth_kernel(kernelsize)
 
-    kernel_score = list()
+        readcount = list()
 
-    for w in sorted(kernelnow):
+        kernel_score = list()
 
-        kernel_score.append(kernelnow[w])
+        for w in sorted(kernelnow):
 
-    for n in range(renewstart, renewend+1):
+            kernel_score.append(kernelnow[w])
 
-        nowcount = 0
+        for n in range(renewstart, renewend+1):
 
-        if n in dhsinglecount:
+            nowcount = 0
 
-            nowcount = dhsinglecount[n]
+            if n in dhsinglecount:
 
-        readcount.append(nowcount)
+                nowcount = dhsinglecount[n]
 
-    nowsmoothed = np.correlate(array(readcount), kernel_score, "same")
+            readcount.append(nowcount)
 
-    outputscore = dict()
+        nowsmoothed = np.correlate(array(readcount), kernel_score, "same")
 
-    outputscore['chromosome'] = chromosome
+        outputscore = dict()
 
-    outputscore['score'] = dict()
+        outputscore['chromosome'] = chromosome
 
-    # print (smoothed_score[0])
+        outputscore['score'] = dict()
 
-    for j in range(0, renewlength):
+        # print (smoothed_score[0])
 
-        nowsite = j + renewstart
+        for j in range(0, renewlength):
 
-        nowscore = nowsmoothed[j]
+            nowsite = j + renewstart
 
-        if (startsite<=nowsite<=endsite):
+            nowscore = nowsmoothed[j]
 
-            outputscore['score'][nowsite] = nowscore
+            if (startsite<=nowsite<=endsite):
 
-    return outputscore
+                outputscore['score'][nowsite] = nowscore
+
+        return outputscore
+
+    except KeyboardInterrupt:
+
+        print ("You cancelled the program!")
+
+        sys.exit(1)
