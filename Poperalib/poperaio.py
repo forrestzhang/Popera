@@ -24,11 +24,11 @@ def normalizeratio(sampleinfors):
 
         adjreads.append(sampleinfor.fregion.adjreads)
 
-    minreadscount = min(adjreads)
+    # minreadscount = min(adjreads)
 
     for sampleinfor in sampleinfors:
 
-        normailziedratio[sampleinfor.samplename] = sampleinfor.fregion.adjreads/minreadscount
+        normailziedratio[sampleinfor.samplename] = sampleinfor.fregion.adjreads/sampleinfor.fregion.countgenomelength
 
     return normailziedratio
 

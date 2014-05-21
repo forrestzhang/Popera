@@ -56,6 +56,14 @@ class FRegion:
 
         adjreads = totalreads - filterreadscount
 
+        countgenomelength = 0
+
+        for chromosome in count_chr:
+
+            countgenomelength = countgenomelength + int(chrs_length[chromosome])
+
+        self.countgenomelength = countgenomelength
+
         self.filted_region = filted_region
 
         self.thresh_hold = thresh_hold
