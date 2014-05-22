@@ -191,7 +191,7 @@ def opt_check(poperaopt):
 
     for i in sam_ref:
 
-        opt.countchr.append(i)
+        opt.countchr.append(str(i))
 
     if (opt.excludechr):
 
@@ -224,23 +224,23 @@ def opt_check(poperaopt):
                     j = j + 1
 
     ### skip digital start chromosome
-    k = 0
-
-    digstart = re.compile('\-')
-
-    for m in opt.countchr:
-
-        if digstart.match(m):
-
-            del opt.countchr[k]
-
-            print("skip chr:", m)
-
-        k = k + 1
-
-    else:
-
-        pass
+    # k = 0
+    #
+    # digstart = re.compile('\-')
+    #
+    # for m in opt.countchr:
+    #
+    #     if digstart.match(m):
+    #
+    #         del opt.countchr[k]
+    #
+    #         print("skip chr:", m)
+    #
+    #     k = k + 1
+    #
+    # else:
+    #
+    #     pass
 
     return opt
 

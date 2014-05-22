@@ -145,7 +145,8 @@ def hotspotscounter(par):
 
         for sampleinfor in sampleinfors:
 
-            nowreads = dhsingleregioncounter(bamfile=sampleinfor.datafile, region=hotspot.region)
+            nowreads = dhsingleregioncounter(bamfile=sampleinfor.datafile, regionchromosome=hotspot.chromosome,
+                                             regionstart=hotspot.start, regionend=hotspot.end)
 
             normailziedcount = nowreads/(hotspot.end-hotspot.start+1)/normalizedratio[sampleinfor.samplename]
 

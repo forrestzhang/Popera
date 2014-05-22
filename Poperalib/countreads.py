@@ -3,13 +3,13 @@ from __future__ import print_function
 import pysam
 
 
-def dhsinglereadscounter(bamfile, region):
+def dhsinglereadscounter(bamfile, regionchromosome, regionstart, regionend):
 
     samfile = pysam.Samfile(bamfile)
 
     readscount = dict()
 
-    for aligned_read in samfile.fetch(region=region):
+    for aligned_read in samfile.fetch(reference=regionchromosome, start=regionstart, end=regionend):
 
         if aligned_read.is_reverse:
 
@@ -32,7 +32,7 @@ def dhsinglereadscounter(bamfile, region):
     return readscount
 
 
-def dhsinglewindowscarecounter(bamfile, region, windowsize):
+def dhsinglewindowscarecounter(bamfile, regionchromosome, regionstart, regionend, windowsize):
 
     samfile = pysam.Samfile(bamfile)
 
@@ -42,17 +42,17 @@ def dhsinglewindowscarecounter(bamfile, region, windowsize):
 
     window_size_count['uniquesite'] = 0
 
-    chromosome, sesite = region.split(':')
-
-    startsite, endsite = sesite.split('-')
-
-    startsite = int(startsite)
-
-    endsite = int(endsite)
+    # chromosome, sesite = region.split(':')
+    #
+    # startsite, endsite = sesite.split('-')
+    #
+    # startsite = int(startsite)
+    #
+    # endsite = int(endsite)
 
     uniqsites = dict()
 
-    for alignend_read in samfile.fetch(region=region):
+    for alignend_read in samfile.fetch(reference=regionchromosome, start=regionstart, end=regionend):
 
         if alignend_read.is_reverse:
 
@@ -62,7 +62,7 @@ def dhsinglewindowscarecounter(bamfile, region, windowsize):
 
             site = alignend_read.pos
 
-        if (startsite<=site<=endsite):
+        if (regionstart<=site<=regionend):
 
             if site in uniqsites:
                 pass
@@ -71,7 +71,7 @@ def dhsinglewindowscarecounter(bamfile, region, windowsize):
 
         siteint=int(site/windowsize)
 
-        if (startsite<=siteint<=endsite):
+        if (regionstart<=siteint<=regionend):
 
             if siteint in window_size_count['readscount']:
 
@@ -88,21 +88,21 @@ def dhsinglewindowscarecounter(bamfile, region, windowsize):
     return window_size_count
 
 
-def dhsingleregioncounter(bamfile, region):
+def dhsingleregioncounter(bamfile, regionchromosome, regionstart, regionend):
 
     samfile = pysam.Samfile(bamfile)
 
     window_count = 0
 
-    chromosome, sesite = region.split(':')
+    # chromosome, sesite = region.split(':')
+    #
+    # startsite, endsite = sesite.split('-')
+    #
+    # startsite = int(startsite)
+    #
+    # endsite = int(endsite)
 
-    startsite, endsite = sesite.split('-')
-
-    startsite = int(startsite)
-
-    endsite = int(endsite)
-
-    for alignend_read in samfile.fetch(region=region):
+    for alignend_read in samfile.fetch(reference=regionchromosome, start=regionstart, end=regionend):
 
         if alignend_read.is_reverse:
 
@@ -114,7 +114,7 @@ def dhsingleregioncounter(bamfile, region):
 
         siteint=int(site)
 
-        if (startsite<=siteint<=endsite):
+        if (regionstart<=siteint<=regionend):
 
             window_count = window_count + 1
 
@@ -123,35 +123,36 @@ def dhsingleregioncounter(bamfile, region):
 
 
 
-def windowmidsitecounter(bamfile, region, windowsize, chr_length):
+def windowmidsitecounter(bamfile, regionchromosome, regionstart, regionend, windowsize, chr_length):
 
     window_count = dict()
 
-    chromosome, sesite = region.split(':')
+    # chromosome, sesite = region.split(':')
+    #
+    # startsite, endsite = sesite.split('-')
+    #
+    # startsite = int(int(startsite)-windowsize/2)
+    #
+    # endsite = int(int(endsite)+windowsize/2)
 
-    startsite, endsite = sesite.split('-')
+    if regionstart < 1:
 
-    startsite = int(int(startsite)-windowsize/2)
+        regionstart = 1
 
-    endsite = int(int(endsite)+windowsize/2)
+    if regionend > chr_length:
 
-    if startsite < 1:
+        regionend = chr_length
 
-        startsite = 1
+    # resizeregion = chromosome + ":" + str(startsite) + "-" + str(endsite)
 
-    if endsite > chr_length:
-
-        endsite = chr_length
-
-    resizeregion = chromosome + ":" + str(startsite) + "-" + str(endsite)
-
-    regioncount = dhsinglereadscounter(bamfile=bamfile, region=resizeregion)
+    regioncount = dhsinglereadscounter(bamfile=bamfile, regionchromosome=regionchromosome,
+                                       regionstart=regionstart, regionend=regionend)
 
     halfwindow = int(windowsize/2)
 
-    midsite = startsite
+    midsite = regionstart
 
-    while (midsite <= endsite):
+    while (midsite <= regionend):
 
         windowcount = 0
 
@@ -172,13 +173,13 @@ def windowmidsitecounter(bamfile, region, windowsize, chr_length):
     return window_count
 
 
-def dhsinglereadsnormailzed(bamfile, region, ultratio):
+def dhsinglereadsnormailzed(bamfile, regionchromosome, regionstart, regionend, ultratio):
 
     samfile = pysam.Samfile(bamfile)
 
     readscount = dict()
 
-    for aligned_read in samfile.fetch(region = region):
+    for aligned_read in samfile.fetch(reference=regionchromosome, start=regionstart, end=regionend):
 
         if aligned_read.is_reverse:
 
