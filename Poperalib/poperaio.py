@@ -279,7 +279,7 @@ def wigwritter(par):
 
                 for site in sorted(smoothedscore['score'].keys()):
 
-                    print (site, smoothedscore['score'][site])
+                    # print (site, smoothedscore['score'][site])
 
                     score = smoothedscore['score'][site]/samplenormalizedratio
 
