@@ -316,7 +316,7 @@ def opt_check(poperaopt):
     ### skip digital start chromosome
     k = 0
 
-    digstart = re.compile('^\d')
+    digstart = re.compile('\-')
 
     for m in opt.countchr:
 
