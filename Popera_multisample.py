@@ -65,6 +65,8 @@ def nocontrol(opt):
 
         fregion = FRegion(bamfile=datafile,  countchr=countchr, nthreads=nthreads)
 
+        # print (fregion.chr_unique,fregion.adjreads,fregion.chrs_length)
+
         hotspots = hotspotscount_nocontrol(bamfile=datafile, threshold=threshold, kernellength=bw,
                                             windowsize=windowsize, nthreads=nthreads, minlength=minlength,
                                             samplename=samplename, fregion=fregion, countchr=countchr)
@@ -282,6 +284,7 @@ def opt_check(poperaopt):
     for i in sam_ref:
 
         opt.countchr.append(str(i))
+        # opt.countchr.append(i)
 
     if opt.excludechr:
 

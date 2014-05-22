@@ -21,6 +21,10 @@ def regionsmooth(bamfile, regionchromosome, regionstart, regionend, chr_length, 
         #
         # endsite = int(endsite)
 
+        startsite = regionstart
+
+        endsite = regionend
+
         regionstart = regionstart - kernelsize*2
 
         regionend = regionend + kernelsize*2
@@ -33,13 +37,15 @@ def regionsmooth(bamfile, regionchromosome, regionstart, regionend, chr_length, 
 
             regionend = chr_length
 
-        renewlength = regionstart - regionend + 1
+        renewlength = regionend - regionstart + 1
 
-        # smoothed_score = np.repeat(0, renewlength)
+        # print (regionstart, regionend)
+
+        smoothed_score = np.repeat(0, renewlength)
 
         # resizeregion = chromosome+":"+str(renewstart)+"-"+str(renewend)
 
-        dhsinglecount = dhsinglereadscounter(bamfile=bamfile, regionchromosome=regionchromosome,
+        dhsinglecount = dhsinglereadscounter(bamfile=bamfile, regionchromosome=str(regionchromosome),
                                              regionstart=regionstart, regionend=regionend)
 
         kernelnow = smooth_kernel(kernelsize)
@@ -78,9 +84,11 @@ def regionsmooth(bamfile, regionchromosome, regionstart, regionend, chr_length, 
 
             nowscore = nowsmoothed[j]
 
-            if (regionstart<=nowsite<=regionend):
+            if (startsite<=nowsite<=endsite):
 
                 outputscore['score'][nowsite] = nowscore
+
+                # print (regionchromosome,nowsite,nowscore)
 
         return outputscore
 

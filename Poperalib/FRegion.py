@@ -177,6 +177,8 @@ def filter_region(bamfile, count_chr, nthreads):
 
             nowchromosome = nowchrcount['chromosome']
 
+            nowchromosome = str(nowchromosome)
+
             nowwindowcount = nowchrcount['windowcount']
 
             nowchruniq = nowchrcount['uniquesite']

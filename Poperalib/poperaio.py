@@ -249,6 +249,8 @@ def wigwritter(par):
 
         for chromosome in sampleinfor.fregion.count_chr:
 
+            chromosome = str(chromosome)
+
             print('track type=wiggle_0 name="',sampleinfor.samplename,'" description="', sampleinfor.samplename,'"',sep='',file=wigio)
 
             print('variableStep	chrom=', chromosome, sep='', file=wigio)
@@ -264,14 +266,20 @@ def wigwritter(par):
 
                     endsite = sampleinfor.fregion.chrs_length[chromosome]
 
+                # print (chromosome,startsite,endsite)
+
                 # regionnow = chromosome+":" + str(startsite) + "-" + str(endsite)
 
-                smoothedscore = regionsmooth(bamfile=bamfile, regionchromosome=chromosome,
+                smoothedscore = regionsmooth(bamfile=bamfile, regionchromosome=str(chromosome),
                                              regionstart=startsite, regionend=endsite,
                                              chr_length=sampleinfor.fregion.chrs_length[chromosome],
                                              kernelsize=kernellength)
 
+                # print (smoothedscore['score'])
+
                 for site in sorted(smoothedscore['score'].keys()):
+
+                    print (site, smoothedscore['score'][site])
 
                     score = smoothedscore['score'][site]/samplenormalizedratio
 

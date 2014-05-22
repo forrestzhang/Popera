@@ -9,7 +9,7 @@ def dhsinglereadscounter(bamfile, regionchromosome, regionstart, regionend):
 
     readscount = dict()
 
-    for aligned_read in samfile.fetch(reference=regionchromosome, start=regionstart, end=regionend):
+    for aligned_read in samfile.fetch(reference=str(regionchromosome), start=regionstart, end=regionend):
 
         if aligned_read.is_reverse:
 
@@ -52,7 +52,7 @@ def dhsinglewindowscarecounter(bamfile, regionchromosome, regionstart, regionend
 
     uniqsites = dict()
 
-    for alignend_read in samfile.fetch(reference=regionchromosome, start=regionstart, end=regionend):
+    for alignend_read in samfile.fetch(reference=str(regionchromosome), start=regionstart, end=regionend):
 
         if alignend_read.is_reverse:
 
@@ -102,7 +102,7 @@ def dhsingleregioncounter(bamfile, regionchromosome, regionstart, regionend):
     #
     # endsite = int(endsite)
 
-    for alignend_read in samfile.fetch(reference=regionchromosome, start=regionstart, end=regionend):
+    for alignend_read in samfile.fetch(reference=str(regionchromosome), start=regionstart, end=regionend):
 
         if alignend_read.is_reverse:
 
@@ -119,8 +119,6 @@ def dhsingleregioncounter(bamfile, regionchromosome, regionstart, regionend):
             window_count = window_count + 1
 
     return window_count
-
-
 
 
 def windowmidsitecounter(bamfile, regionchromosome, regionstart, regionend, windowsize, chr_length):
@@ -145,7 +143,7 @@ def windowmidsitecounter(bamfile, regionchromosome, regionstart, regionend, wind
 
     # resizeregion = chromosome + ":" + str(startsite) + "-" + str(endsite)
 
-    regioncount = dhsinglereadscounter(bamfile=bamfile, regionchromosome=regionchromosome,
+    regioncount = dhsinglereadscounter(bamfile=bamfile, regionchromosome=str(regionchromosome),
                                        regionstart=regionstart, regionend=regionend)
 
     halfwindow = int(windowsize/2)
@@ -179,7 +177,7 @@ def dhsinglereadsnormailzed(bamfile, regionchromosome, regionstart, regionend, u
 
     readscount = dict()
 
-    for aligned_read in samfile.fetch(reference=regionchromosome, start=regionstart, end=regionend):
+    for aligned_read in samfile.fetch(reference=str(regionchromosome), start=regionstart, end=regionend):
 
         if aligned_read.is_reverse:
 
