@@ -264,9 +264,10 @@ def wigwritter(par):
 
                     endsite = sampleinfor.fregion.chrs_length[chromosome]
 
-                regionnow = chromosome+":" + str(startsite) + "-" + str(endsite)
+                # regionnow = chromosome+":" + str(startsite) + "-" + str(endsite)
 
-                smoothedscore = regionsmooth(bamfile=bamfile, region=regionnow,
+                smoothedscore = regionsmooth(bamfile=bamfile, regionchromosome=chromosome,
+                                             regionstart=startsite, regionend=endsite,
                                              chr_length=sampleinfor.fregion.chrs_length[chromosome],
                                              kernelsize=kernellength)
 
