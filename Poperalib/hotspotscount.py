@@ -185,13 +185,14 @@ def hostspotspointcounter_nocontrol(par):
 
         samfile = pysam.Samfile(bamfile)
 
-        countregion = chromosome + ':' + str(regionstart) + '-' + str(regionend)
+        # countregion = chromosome + ':' + str(regionstart) + '-' + str(regionend)
 
         hotsopts_scare = list()
 
         reads_score = dict()
 
-        reads_score = dhsinglereadsnormailzed(bamfile=bamfile, region=countregion, ultratio=ultratio)
+        reads_score = dhsinglereadsnormailzed(bamfile=bamfile, regionchromosome=chromosome, regionstart=regionstart,
+                                              regionend=regionend, ultratio=ultratio)
 
         kernel_score = list()
 

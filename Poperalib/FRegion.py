@@ -7,6 +7,7 @@ from countreads import *
 import timeit
 import sys
 
+
 class KeyboardInterruptError(Exception):
 
     pass
@@ -139,13 +140,20 @@ def filter_region(bamfile, count_chr, nthreads):
 
                 par['windowsize'] = windowsize
 
+                par['regionchromosome'] = str(chromosome)
+
+                par['regionstart'] = 1
+
+                par['regionend'] = int(chr_length)
+
                 par['bamfile'] = bamfile
 
                 pars.append(par)
 
                 chrregion = chromosome+':'+str('1')+'-'+str(chr_length)
 
-                chrcount = dhsingleregioncounter(bamfile=bamfile, region=chrregion)
+                chrcount = dhsingleregioncounter(bamfile=bamfile, regionchromosome=chromosome,
+                                                 regionstart=1, regionend=int(chr_length))
 
                 chr_total_reads[chr] = chrcount
 
@@ -168,6 +176,8 @@ def filter_region(bamfile, count_chr, nthreads):
         for nowchrcount in chrswindow:
 
             nowchromosome = nowchrcount['chromosome']
+
+            nowchromosome = str(nowchromosome)
 
             nowwindowcount = nowchrcount['windowcount']
 
@@ -283,7 +293,14 @@ def chrwindow_counter(par):
 
         bamfile = par['bamfile']
 
-        windowcount = dhsinglewindowscarecounter(bamfile=bamfile, region=regionnow,
+        regionchromosome = par['regionchromosome']
+
+        regionstart = par['regionstart']
+
+        regionend = par['regionend']
+
+        windowcount = dhsinglewindowscarecounter(bamfile=bamfile, regionchromosome=regionchromosome,
+                                                 regionstart=regionstart, regionend=regionend,
                                                  windowsize=windowsize)
 
         chrwindowcount = dict()
@@ -303,76 +320,76 @@ def chrwindow_counter(par):
         sys.stderr.write("User interrupt\n")
 
         sys.exit(0)
-
-
-if __name__ == "__main__":
-    try:
-        # main()
-        import re
-        from bgcount import *
-        datafile = "Reb1_600mM_nova.bam"
-        countchr=list()
-
-        samfile = pysam.Samfile(datafile)
-
-        sam_ref = samfile.references
-
-        for i in sam_ref:
-
-            countchr.append(i)
-
-        excludechr = 'chrMito'
-
-        if (excludechr):
-
-            excludchr = excludechr.split(',')
-
-            for chri in excludchr:
-
-                if not chri in sam_ref:
-
-                    print (chri, 'not in the %s file' % datafile)
-
-                    print ("try to selcet exclude Chr from", end =" : ")
-
-                    print (sam_ref, sep=",")
-
-                    sys.exit(1)
-
-                else:
-
-                    j = 0
-
-                    for n in countchr:
-
-                        if chri == n:
-
-                            del countchr[j]
-
-                        j = j + 1
-
-        k = 0
-
-        digstart = re.compile('^\d')
-
-        for m in countchr:
-
-            if digstart.match(m):
-
-                del countchr[k]
-
-                print("skip chr:", m)
-
-            k = k + 1
-
-        a = FRegion(bamfile=datafile, nthreads=4, countchr=countchr)
-
-        uniqreate = dhuniquerate(fregion=a)
-
-        print (uniqreate)
-
-
-
-    except KeyboardInterrupt:
-        sys.stderr.write("User interrupt\n")
-        sys.exit(0)
+#
+#
+# if __name__ == "__main__":
+#     try:
+#         # main()
+#         import re
+#         from bgcount import *
+#         datafile = "Reb1_600mM_nova.bam"
+#         countchr=list()
+#
+#         samfile = pysam.Samfile(datafile)
+#
+#         sam_ref = samfile.references
+#
+#         for i in sam_ref:
+#
+#             countchr.append(i)
+#
+#         excludechr = 'chrMito'
+#
+#         if (excludechr):
+#
+#             excludchr = excludechr.split(',')
+#
+#             for chri in excludchr:
+#
+#                 if not chri in sam_ref:
+#
+#                     print (chri, 'not in the %s file' % datafile)
+#
+#                     print ("try to selcet exclude Chr from", end =" : ")
+#
+#                     print (sam_ref, sep=",")
+#
+#                     sys.exit(1)
+#
+#                 else:
+#
+#                     j = 0
+#
+#                     for n in countchr:
+#
+#                         if chri == n:
+#
+#                             del countchr[j]
+#
+#                         j = j + 1
+#
+#         k = 0
+#
+#         digstart = re.compile('^\d')
+#
+#         for m in countchr:
+#
+#             if digstart.match(m):
+#
+#                 del countchr[k]
+#
+#                 print("skip chr:", m)
+#
+#             k = k + 1
+#
+#         a = FRegion(bamfile=datafile, nthreads=4, countchr=countchr)
+#
+#         uniqreate = dhuniquerate(fregion=a)
+#
+#         print (uniqreate)
+#
+#
+#
+#     except KeyboardInterrupt:
+#         sys.stderr.write("User interrupt\n")
+#         sys.exit(0)

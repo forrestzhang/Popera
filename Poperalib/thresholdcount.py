@@ -63,6 +63,12 @@ def countthreshold(bamfile, count_chr, frgion, threshold, kernelsize=200, window
 
             nowregion = chromosome+":"+str(nowstart)+"-"+str(nowend)
 
+            par['regionchromosome'] = str(chromosome)
+
+            par['regionstart'] = nowstart
+
+            par['regionend'] = nowend
+
             par['region'] = nowregion
 
             pars.append(par)
@@ -143,7 +149,15 @@ def countthresholdrunner(par):
 
         region = par['region']
 
-        smoothscore = regionsmooth(bamfile, region, chr_length, kernelsize)
+        regionchromosome = par['regionchromosome']
+
+        regionstart = par['regionstart']
+
+        regionend = par['regionend']
+
+
+
+        smoothscore = regionsmooth(bamfile, regionchromosome, regionstart, regionend, chr_length, kernelsize)
 
         chromosome, sesite = region.split(':')
 

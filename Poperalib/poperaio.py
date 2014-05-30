@@ -145,7 +145,8 @@ def hotspotscounter(par):
 
         for sampleinfor in sampleinfors:
 
-            nowreads = dhsingleregioncounter(bamfile=sampleinfor.datafile, region=hotspot.region)
+            nowreads = dhsingleregioncounter(bamfile=sampleinfor.datafile, regionchromosome=hotspot.chromosome,
+                                             regionstart=hotspot.start, regionend=hotspot.end)
 
             normailziedcount = nowreads/(hotspot.end-hotspot.start+1)/normalizedratio[sampleinfor.samplename]
 
@@ -248,6 +249,8 @@ def wigwritter(par):
 
         for chromosome in sampleinfor.fregion.count_chr:
 
+            chromosome = str(chromosome)
+
             print('track type=wiggle_0 name="',sampleinfor.samplename,'" description="', sampleinfor.samplename,'"',sep='',file=wigio)
 
             print('variableStep	chrom=', chromosome, sep='', file=wigio)
@@ -263,13 +266,20 @@ def wigwritter(par):
 
                     endsite = sampleinfor.fregion.chrs_length[chromosome]
 
-                regionnow = chromosome+":" + str(startsite) + "-" + str(endsite)
+                # print (chromosome,startsite,endsite)
 
-                smoothedscore = regionsmooth(bamfile=bamfile, region=regionnow,
+                # regionnow = chromosome+":" + str(startsite) + "-" + str(endsite)
+
+                smoothedscore = regionsmooth(bamfile=bamfile, regionchromosome=str(chromosome),
+                                             regionstart=startsite, regionend=endsite,
                                              chr_length=sampleinfor.fregion.chrs_length[chromosome],
                                              kernelsize=kernellength)
 
+                # print (smoothedscore['score'])
+
                 for site in sorted(smoothedscore['score'].keys()):
+
+                    # print (site, smoothedscore['score'][site])
 
                     score = smoothedscore['score'][site]/samplenormalizedratio
 

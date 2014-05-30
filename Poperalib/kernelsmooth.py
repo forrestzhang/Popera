@@ -9,37 +9,44 @@ class KeyboardInterruptError(Exception):
     pass
 
 
-def regionsmooth(bamfile, region, chr_length, kernelsize):
+def regionsmooth(bamfile, regionchromosome, regionstart, regionend, chr_length, kernelsize):
 
     try:
 
-        chromosome, sesite = region.split(':')
+        # regionchromosome, sesite = region.split(':')
 
-        startsite, endsite = sesite.split('-')
+        # startsite, endsite = sesite.split('-')
+        #
+        # startsite = int(startsite)
+        #
+        # endsite = int(endsite)
 
-        startsite = int(startsite)
+        startsite = regionstart
 
-        endsite = int(endsite)
+        endsite = regionend
 
-        renewstart = startsite - kernelsize*2
+        regionstart = regionstart - kernelsize*2
 
-        renewend = endsite + kernelsize*2
+        regionend = regionend + kernelsize*2
 
-        if renewstart < 1:
+        if regionstart < 1:
 
-            renewstart = 1
+            regionstart = 1
 
-        if renewend > chr_length:
+        if regionend > chr_length:
 
-            renewend = chr_length
+            regionend = chr_length
 
-        renewlength = renewend - renewstart + 1
+        renewlength = regionend - regionstart + 1
 
-        # smoothed_score = np.repeat(0, renewlength)
+        # print (regionstart, regionend)
 
-        resizeregion = chromosome+":"+str(renewstart)+"-"+str(renewend)
+        smoothed_score = np.repeat(0, renewlength)
 
-        dhsinglecount = dhsinglereadscounter(bamfile=bamfile, region=resizeregion)
+        # resizeregion = chromosome+":"+str(renewstart)+"-"+str(renewend)
+
+        dhsinglecount = dhsinglereadscounter(bamfile=bamfile, regionchromosome=str(regionchromosome),
+                                             regionstart=regionstart, regionend=regionend)
 
         kernelnow = smooth_kernel(kernelsize)
 
@@ -51,7 +58,7 @@ def regionsmooth(bamfile, region, chr_length, kernelsize):
 
             kernel_score.append(kernelnow[w])
 
-        for n in range(renewstart, renewend+1):
+        for n in range(regionstart, regionend+1):
 
             nowcount = 0
 
@@ -65,7 +72,7 @@ def regionsmooth(bamfile, region, chr_length, kernelsize):
 
         outputscore = dict()
 
-        outputscore['chromosome'] = chromosome
+        outputscore['chromosome'] = regionchromosome
 
         outputscore['score'] = dict()
 
@@ -73,13 +80,15 @@ def regionsmooth(bamfile, region, chr_length, kernelsize):
 
         for j in range(0, renewlength):
 
-            nowsite = j + renewstart
+            nowsite = j + regionstart
 
             nowscore = nowsmoothed[j]
 
             if (startsite<=nowsite<=endsite):
 
                 outputscore['score'][nowsite] = nowscore
+
+                # print (regionchromosome,nowsite,nowscore)
 
         return outputscore
 

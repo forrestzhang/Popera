@@ -65,6 +65,8 @@ def nocontrol(opt):
 
         fregion = FRegion(bamfile=datafile,  countchr=countchr, nthreads=nthreads)
 
+        # print (fregion.chr_unique,fregion.adjreads,fregion.chrs_length)
+
         hotspots = hotspotscount_nocontrol(bamfile=datafile, threshold=threshold, kernellength=bw,
                                             windowsize=windowsize, nthreads=nthreads, minlength=minlength,
                                             samplename=samplename, fregion=fregion, countchr=countchr)
@@ -161,32 +163,32 @@ def get_optparser():
 
     poperaopt.add_option("-n", "--name", dest="samplenames", help="NH sample name default=DH_sample1,DH_sample2", type="string" , default="DH_sample")
 
-    poperaopt.add_option("-b", "--bandwidth", dest="bw", type="int", help="kernel smooth band width, should >1, default=50", default=200)
+    poperaopt.add_option("-b", "--bandwidth", dest="bw", type="int", help="kernel smooth band width, should >1, default=200", default=200)
 
     poperaopt.add_option("-t", "--threshold", dest="threshold", type="float", help="Hot spots threshold, default=4.0", default=5.0)
 
     poperaopt.add_option("-l", "--minlength", dest="minlength", type="int", help="minimum length of hot spots, default=5", default= 50)
 
-    poperaopt.add_option("-p", "--pavlue", dest="pvalue", type="float", help="p-value cutoff for peak identification, default=0.05",
-                        default=0.01)
+    # poperaopt.add_option("-p", "--pavlue", dest="pvalue", type="float", help="p-value cutoff for peak identification, default=0.05",
+    #                     default=0.01)
 
-    poperaopt.add_option("-i", "--initial", dest="initial", type="int", help="Peak's initial length, >1 and <minlength, default=5", default=5)
+    # poperaopt.add_option("-i", "--initial", dest="initial", type="int", help="Peak's initial length, >1 and <minlength, default=5", default=5)
 
     poperaopt.add_option("--threads", dest="nthreads", type="int", help="threads number or cpu number, default=4", default=4)
 
     poperaopt.add_option("-w", "--wig", action="store_true", help="whether out put wiggle file, default=False", default=False)
 
-    poperaopt.add_option("-f","--fdr",action="store_true",help="using FDR instead p-value", default=False)
+    # poperaopt.add_option("-f","--fdr",action="store_true",help="using FDR instead p-value", default=False)
 
     poperaopt.add_option("-x", "--excludechr", dest="excludechr", help="Don't count those DHs, example='-x ChrM,ChrC'")
 
-    poperaopt.add_option("-g", "--gff", action="store_true", help="whether out put gff file, default=False", default=False)
+    # poperaopt.add_option("-g", "--gff", action="store_true", help="whether out put gff file, default=False", default=False)
 
     # poperaopt.add_option("-j","--jobtype",dest="jobtype",type="string",help="job type, such as nhpaired or nhsingle")
 
     # poperaopt.add_option("-m","--maxinsert",dest="maxinsert",type="int",help="when you use paired library, please set the maxinsert size",default=80)
 
-    poperaopt.add_option("--pe", dest="pe", action="store_true", help="paired-end reads or single-end reads, default=False (single end)", default=False)
+    # poperaopt.add_option("--pe", dest="pe", action="store_true", help="paired-end reads or single-end reads, default=False (single end)", default=False)
 
     return poperaopt
 
@@ -281,9 +283,10 @@ def opt_check(poperaopt):
 
     for i in sam_ref:
 
-        opt.countchr.append(i)
+        opt.countchr.append(str(i))
+        # opt.countchr.append(i)
 
-    if (opt.excludechr):
+    if opt.excludechr:
 
         excludchr = opt.excludechr.split(',')
 
@@ -312,26 +315,27 @@ def opt_check(poperaopt):
                         del opt.countchr[j]
 
                     j = j + 1
+    print ("countchr:", opt.countchr)
 
     ### skip digital start chromosome
-    k = 0
-
-    digstart = re.compile('\-')
-
-    for m in opt.countchr:
-
-        if digstart.match(m):
-
-            del opt.countchr[k]
-
-            print("skip chr:", m)
-
-        k = k + 1
-
-    else:
-
-        pass
-
+    # k = 0
+    #
+    # digstart = re.compile('\-')
+    #
+    # for m in opt.countchr:
+    #
+    #     if digstart.match(m):
+    #
+    #         del opt.countchr[k]
+    #
+    #         print("skip chr:", m)
+    #
+    #     k = k + 1
+    #
+    # else:
+    #
+    #     pass
+    #
     return opt
 
 if __name__ == "__main__":
