@@ -45,3 +45,6 @@ python ~/Popera/Popera_multisample.py -d DH_sample1.bam,DH_sample2.bam -n sample
   
 * -x EXCLUDECHR, --excludechr=EXCLUDECHR
                         Don't count those DHs, example='-x ChrM,ChrC'
+
+What is Popera?
+http://en.wikipedia.org/wiki/Operatic_pop
