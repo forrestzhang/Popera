@@ -75,32 +75,32 @@ def get_optparser():
 
     poperaopt.add_option("-n", "--name", dest="samplename", help="NH sample name default=NH_sample", type="string" , default="DH_sample")
 
-    poperaopt.add_option("-b", "--bandwidth", dest="bw", type="int", help="kernel smooth band width, should >1, default=50", default=200)
+    poperaopt.add_option("-b", "--bandwidth", dest="bw", type="int", help="kernel smooth band width, should >1, default=200", default=200)
 
     poperaopt.add_option("-t", "--threshold", dest="threshold", type="float", help="Hot spots threshold, default=4.0", default=5.0)
 
     poperaopt.add_option("-l", "--minlength", dest="minlength", type="int", help="minimum length of hot spots, default=5", default= 50)
 
-    poperaopt.add_option("-p", "--pavlue", dest="pvalue", type="float", help="p-value cutoff for peak identification, default=0.05",
-                      default=0.01)
+    # poperaopt.add_option("-p", "--pavlue", dest="pvalue", type="float", help="p-value cutoff for peak identification, default=0.05",
+    #                   default=0.01)
 
-    poperaopt.add_option("-i", "--initial", dest="initial", type="int", help="Peak's initial length, >1 and <minlength, default=5", default=5)
+    # poperaopt.add_option("-i", "--initial", dest="initial", type="int", help="Peak's initial length, >1 and <minlength, default=5", default=5)
 
     poperaopt.add_option("--threads", dest="nthreads", type="int", help="threads number or cpu number, default=4", default=4)
 
     poperaopt.add_option("-w", "--wig", action="store_true", help="whether out put wiggle file, default=False", default=False)
 
-    poperaopt.add_option("-f","--fdr",action="store_true",help="using FDR instead p-value", default=False)
+    # poperaopt.add_option("-f","--fdr",action="store_true",help="using FDR instead p-value", default=False)
 
     poperaopt.add_option("-x", "--excludechr", dest="excludechr", help="Don't count those DHs, example='-x ChrM,ChrC'")
 
-    poperaopt.add_option("-g", "--gff", action="store_true", help="whether out put gff file, default=False", default=False)
+    # poperaopt.add_option("-g", "--gff", action="store_true", help="whether out put gff file, default=False", default=False)
 
     # poperaopt.add_option("-j","--jobtype",dest="jobtype",type="string",help="job type, such as nhpaired or nhsingle")
 
     # poperaopt.add_option("-m","--maxinsert",dest="maxinsert",type="int",help="when you use paired library, please set the maxinsert size",default=80)
 
-    poperaopt.add_option("--pe", dest="pe", action="store_true", help="paired-end reads or single-end reads, default=False (single end)", default=False)
+    # poperaopt.add_option("--pe", dest="pe", action="store_true", help="paired-end reads or single-end reads, default=False (single end)", default=False)
 
     return poperaopt
 
