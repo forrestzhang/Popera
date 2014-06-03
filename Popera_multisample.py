@@ -35,13 +35,13 @@ def nocontrol(opt):
 
     minlength = opt.minlength
 
-    pvalue = opt.pvalue
+    # pvalue = opt.pvalue
 
     wig = opt.wig
 
     nthreads = opt.nthreads
 
-    initiallength = opt.initial
+    # initiallength = opt.initial
 
     samplenamesstr = opt.samplenames
 
