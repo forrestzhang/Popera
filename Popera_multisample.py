@@ -243,13 +243,13 @@ def opt_check(poperaopt):
 
         sys.exit(1)
 
-    if not (opt.pvalue > 0 and opt.pvalue < 1):
-
-        logging.error("pvalue should be a float between 0 and 1")
-
-        poperaopt.print_help()
-
-        sys.exit(1)
+    # if not (opt.pvalue > 0 and opt.pvalue < 1):
+    #
+    #     logging.error("pvalue should be a float between 0 and 1")
+    #
+    #     poperaopt.print_help()
+    #
+    #     sys.exit(1)
 
     if not (opt.bw > 1):
 
@@ -259,13 +259,13 @@ def opt_check(poperaopt):
 
         sys.exit(1)
 
-    if not (opt.initial >= 1 and opt.initial<=opt.minlength):
-
-        logging.error("peak initial length should be >1 and <minlength")
-
-        poperaopt.print_help()
-
-        sys.exit(1)
+    # if not (opt.initial >= 1 and opt.initial<=opt.minlength):
+    #
+    #     logging.error("peak initial length should be >1 and <minlength")
+    #
+    #     poperaopt.print_help()
+    #
+    #     sys.exit(1)
 
     if not (opt.nthreads > 0):
 
