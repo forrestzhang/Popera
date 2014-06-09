@@ -32,17 +32,17 @@ def nocontrol(opt):
 
     minlength = opt.minlength
 
-    pvalue = opt.pvalue
+    # pvalue = opt.pvalue
 
-    wig = opt.wig
+    # wig = opt.wig
 
     nthreads = opt.nthreads
 
-    initiallength = opt.initial
+    # initiallength = opt.initial
 
     samplename = opt.samplename
 
-    gff = opt.gff
+    # gff = opt.gff
 
     windowsize = int(1e5)
 
