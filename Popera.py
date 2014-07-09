@@ -48,6 +48,8 @@ def nocontrol(opt):
 
     threshold = opt.threshold
 
+    wig = opt.wig
+
     fregion = FRegion(bamfile=datafile,  countchr=countchr, nthreads=nthreads)
 
     hotspots = hotspotscount_nocontrol(bamfile=datafile, threshold=threshold, kernellength=bw,
@@ -55,6 +57,16 @@ def nocontrol(opt):
                                         samplename=samplename, fregion=fregion, countchr=countchr)
 
     hotspotswriter(hotspots=hotspots, samplename=samplename)
+
+    sampleinfors = list()
+
+    sampleinfor = Sampleinfor(samplename=samplename, datafile=datafile, fregion=fregion)
+
+    sampleinfors.append(sampleinfor)
+
+    if wig:
+
+        wigwritte(sampleinfors=sampleinfors, kernellength=bw, nthreads=nthreads)
 
 
 def get_optparser():
