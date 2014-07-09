@@ -69,6 +69,7 @@ def hotspotscount_nocontrol(bamfile, threshold, kernellength,
 
             raise KeyboardInterruptError()
 
+
 def chrhotspotscount_nocontrol(bamfile, chromosome, ultratio, cutoff,
                    kernellength, windowsize, nthreads, minlength,chrlength):
     """

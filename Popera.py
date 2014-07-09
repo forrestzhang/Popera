@@ -59,8 +59,8 @@ def nocontrol(opt):
 
 def get_optparser():
 
-    usage = """usage: %prog <-i datafile> [-n name] [options]
-    Example %prog -i dh_sample1.bam -n sample1
+    usage = """usage: %prog <-d datafile> [-n name] [options]
+    Example %prog -d dh_sample1.bam -n sample1
     """
 
     description = "%prog DNase I hypersensitive site identification"
