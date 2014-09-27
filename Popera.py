@@ -36,6 +36,12 @@ def nocontrol(opt):
 
     # wig = opt.wig
 
+    bayes = opt.bayes
+
+    if bayes  > 0:
+
+        print("use bayes test")
+
     nthreads = opt.nthreads
 
     # initiallength = opt.initial
@@ -56,8 +62,22 @@ def nocontrol(opt):
                                         windowsize=windowsize, nthreads=nthreads, minlength=minlength,
                                         samplename=samplename, fregion=fregion, countchr=countchr)
 
-    hotspotswriter(hotspots=hotspots, samplename=samplename)
+    # if bayes > 0:
+    #
+    #     hotspots = hotspots_bayes(bayesfactorthreshold=bayes, nthreads=nthreads, hotspots=hotspots,
+    #                               bamfile=datafile, fregion=fregion, exsize=5)
 
+    # for hotspot in hotspots:
+    #
+    #     print (hotspot.hotspotid, hotspot.bayescore)
+
+
+#######woking
+
+    hotspotswriter(hotspots=hotspots, samplename=samplename, bayesfactorthreshold=bayes)
+
+
+####working
     sampleinfors = list()
 
     sampleinfor = Sampleinfor(samplename=samplename, datafile=datafile, fregion=fregion)
@@ -101,6 +121,8 @@ def get_optparser():
     poperaopt.add_option("--threads", dest="nthreads", type="int", help="threads number or cpu number, default=4", default=4)
 
     poperaopt.add_option("-w", "--wig", action="store_true", help="whether out put wiggle file, default=False", default=False)
+
+    # poperaopt.add_option("--bayes", dest="bayes", type="float", help="use bayes test, default=0", default=0)
 
     # poperaopt.add_option("-f","--fdr",action="store_true",help="using FDR instead p-value", default=False)
 

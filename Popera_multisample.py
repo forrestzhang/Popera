@@ -137,7 +137,7 @@ def nocontrol(opt):
 
         mergedfilename = mergedfilename+"_"+samplenames[i]
 
-    hotspotswriter(hotspots=mergedhotspots, samplename=mergedfilename)
+    hotspotswriter(hotspots=mergedhotspots, samplename='merged_DHS_all')
 
     mergedhotsportscountwrite(sampleinfors=sampleinfors, mergedhotspots=mergedhotspots, nthreads=nthreads)
 

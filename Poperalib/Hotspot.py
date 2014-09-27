@@ -5,7 +5,7 @@ class Hotspot:
 
     """
 
-    def __init__(self, start, end, chromosome, hotspotid, peaks=list(), reads=0):
+    def __init__(self, start, end, chromosome, hotspotid, peaks=list(), reads=0, bayescore=0):
 
         region = chromosome+":"+str(start)+"-"+str(end)
 
@@ -23,6 +23,7 @@ class Hotspot:
 
         self.peaks = peaks
 
+        self.bayescore = bayescore
 
     def addpeaks(self, peak):
 

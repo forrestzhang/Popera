@@ -10,9 +10,11 @@ from kernelsmooth import *
 from kernel import *
 import numpy as np
 
+
 class KeyboardInterruptError(Exception):
 
     pass
+
 
 def normalizeratio(sampleinfors):
 
@@ -33,22 +35,38 @@ def normalizeratio(sampleinfors):
     return normailziedratio
 
 
-def hotspotswriter(samplename, hotspots):
+def hotspotswriter(samplename, hotspots, bayesfactorthreshold=0):
 
     bedfilename =samplename+ '_' + 'hotspots' + ".bed"
 
     open_bed = io.FileIO(bedfilename, 'w')
 
-    for hotspot in hotspots:
+    if bayesfactorthreshold == 0:
 
-        #bedlist = [str(hotspot.chromosome), str(hotspot.start), str(hotspot.end), hotspot.hotspotid]
-        bedlist = [str(hotspot.chromosome), str(hotspot.start), str(hotspot.end)]
+        for hotspot in hotspots:
 
-        linker = "\t"
+            #bedlist = [str(hotspot.chromosome), str(hotspot.start), str(hotspot.end), hotspot.hotspotid]
+            bedlist = [str(hotspot.chromosome), str(hotspot.start), str(hotspot.end)]
 
-        outstring = linker.join(bedlist) + "\n"
+            linker = "\t"
 
-        open_bed.write(outstring)
+            outstring = linker.join(bedlist) + "\n"
+
+            open_bed.write(outstring)
+    else:
+
+        for hotspot in hotspots:
+
+            #bedlist = [str(hotspot.chromosome), str(hotspot.start), str(hotspot.end), hotspot.hotspotid]
+            if hotspot.bayescore >= bayesfactorthreshold:
+
+                bedlist = [str(hotspot.chromosome), str(hotspot.start), str(hotspot.end), hotspot.hotspotid, str(hotspot.bayescore)]
+
+                linker = "\t"
+
+                outstring = linker.join(bedlist) + "\n"
+
+                open_bed.write(outstring)
 
     open_bed.close()
 

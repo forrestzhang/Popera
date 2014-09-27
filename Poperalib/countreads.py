@@ -198,3 +198,32 @@ def dhsinglereadsnormailzed(bamfile, regionchromosome, regionstart, regionend, u
     return readscount
 
 
+def dhsinglereadsexcount(bamfile, regionchromosome, regionstart, regionend, exsize=5):
+
+    samfile = pysam.Samfile(bamfile)
+
+    readscount = dict()
+
+    for aligned_read in samfile.fetch(reference=str(regionchromosome), start=regionstart, end=regionend):
+
+        if aligned_read.is_reverse:
+
+            site = aligned_read.aend
+
+        else:
+
+            site = aligned_read.pos
+
+        site = site + 1
+
+        for nowsite in range(site-exsize, site+exsize):
+
+            if nowsite in readscount:
+
+                readscount[nowsite] = readscount[nowsite] + 1
+
+            else:
+
+                readscount[nowsite] = 1
+
+    return readscount

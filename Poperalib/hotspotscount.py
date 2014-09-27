@@ -8,7 +8,8 @@ from countreads import *
 import sys
 from Hotspot import *
 from bgcount import *
-
+from cEM_zip import *
+from sta import *
 
 class KeyboardInterruptError(Exception):
 
@@ -228,3 +229,200 @@ def hostspotspointcounter_nocontrol(par):
     except KeyboardInterrupt:
 
         raise KeyboardInterruptError()
+
+
+def hotspots_bayes(bayesfactorthreshold,nthreads, hotspots, bamfile, fregion, exsize):
+
+    pool = Pool(nthreads)
+
+    try:
+
+        pars = list()
+
+        for hotspot in hotspots:
+
+            par = dict()
+
+            par['hotspt'] = hotspot
+
+            par['datafile'] = bamfile
+
+            par['exsize'] = exsize
+
+            par['fregion'] = fregion
+
+            par['bayesfactorthreashold'] = bayesfactorthreshold
+
+            pars.append(par)
+
+        bayeshotspots = pool.map(hotspots_bayes_worker, pars)
+
+        newhotspots = list()
+
+        for hotspotnow in bayeshotspots:
+
+            newhotspots.append(hotspotnow)
+
+        pool.close()
+
+        return newhotspots
+
+    except KeyboardInterrupt:
+
+        pool.terminate()
+
+        print ("You cancelled the program!")
+
+        sys.exit(1)
+
+    except Exception, e:
+
+        print ('got exception in Poperalib.hotspotscount.hotspots_bayes: %r, terminating the pool' % (e,))
+
+        pool.terminate()
+
+        print ('pool is terminated')
+
+    finally:
+
+        pool.join()
+
+
+def hotspots_bayes_worker(par):
+
+    try:
+
+        hotspot = par['hotspt']
+
+        bamfile = par['datafile']
+
+        exsize = par['exsize']
+
+        fregion = par['fregion']
+
+        bayesfactorthreshold = par['bayesfactorthreashold']
+
+        start = hotspot.start
+
+        end = hotspot.end
+
+        chromosome = hotspot.chromosome
+
+        chrlength = fregion.chrs_length[chromosome]
+
+        regionstart = start - 5100
+
+        regionend = end + 5100
+
+        if regionstart < 1:
+
+            regionstart = 1
+
+        if regionend > chrlength:
+
+            regionend = chrlength
+
+        enrichedsite = dict()
+
+        bayesfactorscore = dict()
+
+        inputwindow5k = list()
+
+        inputwindow10k = list()
+
+        datacount = dhsinglereadsexcount(bamfile=bamfile, regionchromosome=chromosome, regionstart=regionstart,
+                                         regionend=regionend, exsize=exsize)
+
+        #print (datacount)
+
+        for sitenow in range(start-5000, end+5000):
+
+            nowcount = 0
+
+            if sitenow < 0:
+
+                continue
+
+            if sitenow > chrlength:
+
+                continue
+
+            if sitenow in datacount:
+
+                nowcount = datacount[sitenow]
+
+            inputwindow10k.append(nowcount)
+
+        for sitenow in range(start-2500,end+2500):
+
+            nowcount = 0
+
+            if sitenow < 0:
+
+                continue
+
+            if sitenow > chrlength:
+
+                continue
+
+            if sitenow in datacount:
+
+                nowcount = datacount[sitenow]
+
+            inputwindow5k.append(nowcount)
+
+
+        (window5klhat, window5kphat) = cEM_zip(inputwindow5k)
+
+        (window10klhat, window10kphat) = cEM_zip(inputwindow10k)
+
+        maxlhat = max(window5klhat, window10klhat)
+
+        maxbayes = 0
+
+        maxsite = 0
+
+        for wsite in range(start-1, end+1):
+
+            if wsite in datacount:
+
+                nowcount = int(datacount[wsite])
+
+                if nowcount < maxlhat:
+
+                    continue
+
+                elif nowcount < 2:
+
+                    continue
+
+                else:
+
+                    nowbayesfactor = bayesfactor(locallambda=maxlhat, peakscore=nowcount)
+
+
+                    if nowbayesfactor > maxbayes:
+
+                        maxbayes = nowbayesfactor
+
+                        maxsite = wsite
+
+        hotspot.bayescore = maxbayes
+
+        # print (hotspot.hotspotid,hotspot.bayescore,maxbayes)
+
+        return hotspot
+
+
+    except Exception, e:
+
+        print ('got exception in Poperalib.hotspotscount.hotspots_bayes_worker: %r, terminating the pool' % (e,))
+
+        print (par['hotspot'].chromosome, par['hotspot'].start,par['hotspot'].end)
+
+
+    except KeyboardInterrupt:
+
+        print ("You cancelled the program!")
+
+        sys.exit(1)
