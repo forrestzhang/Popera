@@ -32,6 +32,50 @@ def dhsinglereadscounter(bamfile, regionchromosome, regionstart, regionend):
     return readscount
 
 
+def dhsinglereadscounterstrand(bamfile, regionchromosome, regionstart, regionend):
+
+    samfile = pysam.Samfile(bamfile)
+
+    readscount = dict()
+
+    readscount['-'] = dict()
+
+    readscount['+'] = dict()
+
+    for aligned_read in samfile.fetch(reference=str(regionchromosome), start=regionstart, end=regionend):
+
+        if aligned_read.is_reverse:
+
+            site = aligned_read.aend
+
+        else:
+
+            site = aligned_read.pos
+
+        site = site + 1
+
+        if aligned_read.is_reverse:
+
+            if site in readscount['-']:
+
+                readscount['-'][site] = readscount['-'][site] + 1
+
+            else:
+
+                readscount['-'][site] = 1
+        else:
+
+            if site in readscount['+']:
+
+                readscount['+'][site] = readscount['+'][site] + 1
+
+            else:
+
+                readscount['+'][site] = 1
+
+    return readscount
+
+
 def dhsinglewindowscarecounter(bamfile, regionchromosome, regionstart, regionend, windowsize):
 
     samfile = pysam.Samfile(bamfile)
