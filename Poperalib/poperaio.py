@@ -265,11 +265,13 @@ def wigwritter(par):
 
             kernel_score.append(kernel[w])
 
+        print('track type=wiggle_0 name="',sampleinfor.samplename,'" description="', sampleinfor.samplename,'"',sep='',file=wigio)
+
         for chromosome in sampleinfor.fregion.count_chr:
 
             chromosome = str(chromosome)
 
-            print('track type=wiggle_0 name="',sampleinfor.samplename,'" description="', sampleinfor.samplename,'"',sep='',file=wigio)
+
 
             print('variableStep	chrom=', chromosome, sep='', file=wigio)
 
