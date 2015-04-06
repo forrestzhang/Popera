@@ -36,11 +36,13 @@ def nocontrol(opt):
 
     # wig = opt.wig
 
-    bayes = opt.bayes
+    bayes = 0
 
-    if bayes  > 0:
+    # bayes = opt.bayes
 
-        print("use bayes test")
+    # if bayes  > 0:
+
+        # print("use bayes test")
 
     nthreads = opt.nthreads
 
