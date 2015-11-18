@@ -1,13 +1,13 @@
-
-
+from __future__ import print_function
+from __future__ import division
 import io
-from .Sampleinfor import *
-from .countreads import *
-from .Hotspot import *
-from .bgcount import *
+from Sampleinfor import *
+from countreads import *
+from Hotspot import *
+from bgcount import *
 from multiprocessing import Pool
-from .kernelsmooth import *
-from .kernel import *
+from kernelsmooth import *
+from kernel import *
 import numpy as np
 
 
@@ -136,7 +136,7 @@ def mergedhotsportscountwrite(sampleinfors, mergedhotspots, nthreads, outfilenam
 
         sys.exit(1)
 
-    except Exception as e:
+    except Exception, e:
 
         print ('got exception: %r, terminating the pool' % (e,))
 
@@ -225,7 +225,7 @@ def wigwritte(sampleinfors, kernellength, nthreads):
 
         sys.exit(1)
 
-    except Exception as e:
+    except Exception, e:
 
         print ('got exception: %r, terminating the pool' % (e,))
 

@@ -1,9 +1,9 @@
-
-
+from __future__ import division
+from __future__ import print_function
 from numpy import *
-from .countreads import *
+from countreads import *
 from multiprocessing import Pool
-from .countreads import *
+from countreads import *
 import timeit
 import sys
 
@@ -268,7 +268,7 @@ def filter_region(bamfile, count_chr, nthreads):
 
         sys.exit(1)
 
-    except Exception as e:
+    except Exception, e:
 
         print ('got exception: %r, terminating the pool' % (e,))
 

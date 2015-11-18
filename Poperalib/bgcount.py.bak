@@ -1,13 +1,13 @@
-
-
+from __future__ import division
+from __future__ import print_function
 import pysam
 from numpy import *
 from multiprocessing import Pool
 import random as rnd
-from .kernel import *
-from .countreads import *
+from kernel import *
+from countreads import *
 import sys
-from .FRegion import *
+from FRegion import *
 
 class KeyboardInterruptError(Exception):
 
@@ -84,7 +84,7 @@ def sim_replicate_nthreads(run_times=1000, uniqueratio=1, kernellength = 600, th
 
         sys.exit(1)
 
-    except Exception as e:
+    except Exception, e:
 
         print ('got exception: %r, terminating the pool' % (e,))
 
@@ -116,7 +116,7 @@ def sim_bg_thread_worker(par):
 
         total_reads = int(sim_genome_size * uniqueratio)
 
-        region_site = list(range(0,sim_genome_size))
+        region_site = range(0,sim_genome_size)
 
         sim_uniqsite = rnd.sample(region_site, total_reads)
 

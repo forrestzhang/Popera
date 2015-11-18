@@ -1,5 +1,5 @@
-
-
+from __future__ import division
+from __future__ import print_function
 import sys
 import logging
 import os
@@ -12,7 +12,6 @@ from Poperalib.hotspotscount import *
 from Poperalib.bgcount import *
 # from Poperalib.peakcount import *
 from Poperalib.poperaio import *
-from Poperalib.Sampleinfor import *
 import re
 
 
@@ -29,126 +28,73 @@ def nocontrol(opt):
 
     bw = opt.bw
 
-    datafilesstr = opt.datafiles
-
-    datafiles = datafilesstr.split(",")
+    datafile = opt.datafile
 
     minlength = opt.minlength
 
     # pvalue = opt.pvalue
 
-    wig = opt.wig
+    # wig = opt.wig
+
+    bayes = 0
+
+    # bayes = opt.bayes
+
+    # if bayes  > 0:
+
+        # print("use bayes test")
 
     nthreads = opt.nthreads
 
     # initiallength = opt.initial
 
-    samplenamesstr = opt.samplenames
+    samplename = opt.samplename
 
-    samplenames = samplenamesstr.split(",")
+    # gff = opt.gff
 
     windowsize = int(1e5)
 
     threshold = opt.threshold
 
-    premertedsite = dict()
+    wig = opt.wig
 
+    fregion = FRegion(bamfile=datafile,  countchr=countchr, nthreads=nthreads)
+
+    hotspots = hotspotscount_nocontrol(bamfile=datafile, threshold=threshold, kernellength=bw,
+                                        windowsize=windowsize, nthreads=nthreads, minlength=minlength,
+                                        samplename=samplename, fregion=fregion, countchr=countchr)
+
+    # if bayes > 0:
+    #
+    #     hotspots = hotspots_bayes(bayesfactorthreshold=bayes, nthreads=nthreads, hotspots=hotspots,
+    #                               bamfile=datafile, fregion=fregion, exsize=5)
+
+    # for hotspot in hotspots:
+    #
+    #     print (hotspot.hotspotid, hotspot.bayescore)
+
+
+#######woking
+
+    hotspotswriter(hotspots=hotspots, samplename=samplename, bayesfactorthreshold=bayes)
+
+
+####working
     sampleinfors = list()
 
-    lengthofdatafile = len(datafiles)
+    sampleinfor = Sampleinfor(samplename=samplename, datafile=datafile, fregion=fregion)
 
-    for i in range(0, lengthofdatafile):
-
-        datafile = datafiles[i]
-
-        samplename = samplenames[i]
-
-        fregion = FRegion(bamfile=datafile,  countchr=countchr, nthreads=nthreads)
-
-        # print (fregion.chr_unique,fregion.adjreads,fregion.chrs_length)
-
-        hotspots = hotspotscount_nocontrol(bamfile=datafile, threshold=threshold, kernellength=bw,
-                                            windowsize=windowsize, nthreads=nthreads, minlength=minlength,
-                                            samplename=samplename, fregion=fregion, countchr=countchr)
-
-
-
-        for hotspot in hotspots:
-
-            if hotspot.chromosome in premertedsite:
-
-                for nowsite in range(hotspot.start, hotspot.end):
-
-                    if nowsite in premertedsite[hotspot.chromosome]:
-
-                        pass
-
-                    else:
-
-                        premertedsite[hotspot.chromosome][nowsite] = 1
-            else:
-
-                premertedsite[hotspot.chromosome] = dict()
-
-                for nowsite in range(hotspot.start, hotspot.end):
-
-                    if nowsite in premertedsite[hotspot.chromosome]:
-
-                        pass
-
-                    else:
-
-                        premertedsite[hotspot.chromosome][nowsite] = 1
-
-        sampleinfor = Sampleinfor(samplename=samplename, datafile=datafile, fregion=fregion)
-
-        sampleinfors.append(sampleinfor)
-
-        hotspotswriter(hotspots=hotspots, samplename=samplename)
-
-    mergedhotspots = list()
-
-    idnumber = 0
-
-    for chromosome in premertedsite:
-
-        hotspots_list = list(premertedsite[chromosome].keys())
-
-        chrhostspots = continueregion(points=hotspots_list, minlength=minlength)
-
-        for hotspotsnow in chrhostspots:
-
-            start_site = hotspotsnow['start_site']
-
-            end_site = hotspotsnow['end_site']
-
-            idnumber = idnumber + 1
-
-            hotspotid = chromosome + '.' + "merged" +str(idnumber)
-
-            hotspot = Hotspot(start=start_site, end=end_site, chromosome=chromosome,
-                                  hotspotid=hotspotid)
-
-            mergedhotspots.append(hotspot)
-
-    mergedfilename = samplenames[0]
-
-    for i in range(1,lengthofdatafile):
-
-        mergedfilename = mergedfilename+"_"+samplenames[i]
-
-    hotspotswriter(hotspots=mergedhotspots, samplename='merged_DHS_all')
-
-    mergedhotsportscountwrite(sampleinfors=sampleinfors, mergedhotspots=mergedhotspots, nthreads=nthreads)
+    sampleinfors.append(sampleinfor)
 
     if wig:
 
         wigwritte(sampleinfors=sampleinfors, kernellength=bw, nthreads=nthreads)
 
+
 def get_optparser():
 
     usage = """usage: %prog <-d datafile> [-n name] [options]
-    Example %prog -d dh_sample1.bam,dh_sample2.bam -n sample1,sample2
+    Example %prog -d dh_sample1.bam -n sample1
     """
 
     description = "%prog DNase I hypersensitive site identification"
@@ -157,11 +103,11 @@ def get_optparser():
 
     poperaopt.add_option("-h", "--help", action="help", help="show this help message and exit.")
 
-    poperaopt.add_option("-d", "--data", dest="datafiles", type="string", help='data file, should be sorted bam format, example=DH_sample1.bam,DH_sample2.bam')
+    poperaopt.add_option("-d", "--data", dest="datafile", type="string", help='data file, should be sorted bam format')
 
     # poperaopt.add_option("-c", "--control", dest="controlfile", type="string", help='control(input) file, should be sorted bam format', default="no")
 
-    poperaopt.add_option("-n", "--name", dest="samplenames", help="NH sample name default=DH_sample1,DH_sample2", type="string" , default="DH_sample")
+    poperaopt.add_option("-n", "--name", dest="samplename", help="NH sample name default=NH_sample", type="string" , default="DH_sample")
 
     poperaopt.add_option("-b", "--bandwidth", dest="bw", type="int", help="kernel smooth band width, should >1, default=200", default=200)
 
@@ -170,13 +116,15 @@ def get_optparser():
     poperaopt.add_option("-l", "--minlength", dest="minlength", type="int", help="minimum length of hot spots, default=5", default= 50)
 
     # poperaopt.add_option("-p", "--pavlue", dest="pvalue", type="float", help="p-value cutoff for peak identification, default=0.05",
-    #                     default=0.01)
+    #                   default=0.01)
 
     # poperaopt.add_option("-i", "--initial", dest="initial", type="int", help="Peak's initial length, >1 and <minlength, default=5", default=5)
 
     poperaopt.add_option("--threads", dest="nthreads", type="int", help="threads number or cpu number, default=4", default=4)
 
     poperaopt.add_option("-w", "--wig", action="store_true", help="whether out put wiggle file, default=False", default=False)
+
+    # poperaopt.add_option("--bayes", dest="bayes", type="float", help="use bayes test, default=0", default=0)
 
     # poperaopt.add_option("-f","--fdr",action="store_true",help="using FDR instead p-value", default=False)
 
@@ -197,51 +145,47 @@ def opt_check(poperaopt):
 
     (opt, args) = poperaopt.parse_args()
 
-    if not opt.datafiles:
+    if not opt.datafile:
 
-        logging.error("you need input a bam file, '-d dh_sample1.bam,dh_sample2.bam'")
+        logging.error("you need input a bam file, '-d dh_sample1.bam'")
 
         poperaopt.print_help()
 
         sys.exit(1)
 
-    datafiles = opt.datafiles.split(",")
+    if not os.path.isfile (opt.datafile):
 
-    if len(datafiles) < 2:
-
-        logging.error("Need at least 2 datafile: %s" % opt.datafiles)
+        logging.error("No such file: %s" % opt.datafile)
 
         sys.exit(1)
 
-    for datafile in datafiles:
+    dataindexfile = opt.datafile + '.bai'
 
-        if not os.path.isfile(datafile):
+    if not os.path.isfile (dataindexfile):
 
-            logging.error("No such file: %s" % opt.datafile)
-
-            sys.exit(1)
-
-        dataindexfile = datafile + '.bai'
-
-        if not os.path.isfile(dataindexfile):
-
-            logging.error("Missing bam index file: %s" % dataindexfile)
-
-            sys.exit(1)
-
-    samplenames = opt.samplenames.split(",")
-
-    if len(datafiles) < 2:
-
-        logging.error("Need at least 2 samplename: %s" % opt.datafiles)
+        logging.error("Missing bam index file: %s" % dataindexfile)
 
         sys.exit(1)
 
-    if not len(samplenames) == len(datafiles):
-
-        logging.error("The number is different between samplenames and datafiles")
-
-        sys.exit(1)
+    # if not opt.controlfile == "no":
+    #
+    #     if not os.path.isfile (opt.controlfile):
+    #
+    #         logging.error("No such file: %s" % opt.controlfile)
+    #
+    #         sys.exit(1)
+    #
+    #     controlindexfile = opt.controlfile + '.bai'
+    #
+    #     if not os.path.isfile (controlindexfile):
+    #
+    #         logging.error("Missing bam index file: %s" % controlindexfile)
+    #
+    #         sys.exit(1)
+    #
+    # else:
+    #
+    #     opt.controlfile = "no"
 
     # if not (opt.pvalue > 0 and opt.pvalue < 1):
     #
@@ -250,7 +194,7 @@ def opt_check(poperaopt):
     #     poperaopt.print_help()
     #
     #     sys.exit(1)
-
+    #
     if not (opt.bw > 1):
 
         logging.error("band width should be a int greater than 1")
@@ -258,7 +202,7 @@ def opt_check(poperaopt):
         poperaopt.print_help()
 
         sys.exit(1)
-
+    #
     # if not (opt.initial >= 1 and opt.initial<=opt.minlength):
     #
     #     logging.error("peak initial length should be >1 and <minlength")
@@ -277,16 +221,15 @@ def opt_check(poperaopt):
 
     opt.countchr = list()
 
-    samfile = pysam.Samfile(datafiles[0])
+    samfile = pysam.Samfile(opt.datafile)
 
     sam_ref = samfile.references
 
     for i in sam_ref:
 
         opt.countchr.append(str(i))
-        # opt.countchr.append(i)
 
-    if opt.excludechr:
+    if (opt.excludechr):
 
         excludchr = opt.excludechr.split(',')
 
@@ -315,7 +258,6 @@ def opt_check(poperaopt):
                         del opt.countchr[j]
 
                     j = j + 1
-    print ("countchr:", opt.countchr)
 
     ### skip digital start chromosome
     # k = 0
@@ -335,7 +277,7 @@ def opt_check(poperaopt):
     # else:
     #
     #     pass
-    #
+
     return opt
 
 if __name__ == "__main__":

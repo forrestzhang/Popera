@@ -1,5 +1,5 @@
-
-
+from __future__ import division
+from __future__ import print_function
 from scipy.special import gamma, gammaincc
 from scipy import math
 import scipy.stats as stats
@@ -18,7 +18,7 @@ def bayesfactor(locallambda, peakscore):
 
         return bayesfactor2
 
-    except Exception as e:
+    except Exception, e:
 
         print ('got exception in Jazzlib.sta.bayesfactor: %r,' % (e,))
 

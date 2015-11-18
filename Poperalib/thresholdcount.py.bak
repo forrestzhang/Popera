@@ -1,8 +1,8 @@
-
-
-from .kernelsmooth import *
+from __future__ import division
+from __future__ import print_function
+from kernelsmooth import *
 from multiprocessing import Pool
-from .FRegion import *
+from FRegion import *
 
 class KeyboardInterruptError(Exception):
 
@@ -128,7 +128,7 @@ def countthreshold(bamfile, count_chr, frgion, threshold, kernelsize=200, window
         pool.terminate()
         print ("You cancelled the program!")
         sys.exit(1)
-    except Exception as e:
+    except Exception, e:
         print ('got exception: %r, terminating the pool' % (e,))
         pool.terminate()
         print ('pool is terminated')

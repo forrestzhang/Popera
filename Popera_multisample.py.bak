@@ -1,5 +1,5 @@
-
-
+from __future__ import division
+from __future__ import print_function
 import sys
 import logging
 import os
@@ -112,7 +112,7 @@ def nocontrol(opt):
 
     for chromosome in premertedsite:
 
-        hotspots_list = list(premertedsite[chromosome].keys())
+        hotspots_list = premertedsite[chromosome].keys()
 
         chrhostspots = continueregion(points=hotspots_list, minlength=minlength)
 
