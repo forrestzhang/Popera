@@ -39,8 +39,8 @@ def hotspotswriter(samplename, hotspots, bayesfactorthreshold=0):
 
     bedfilename =samplename+ '_' + 'hotspots' + ".bed"
 
-    open_bed = io.FileIO(bedfilename, 'w')
-
+    # open_bed = io.FileIO(bedfilename, 'w')
+    open_bed = open(bedfilename, 'w')
     if bayesfactorthreshold == 0:
 
         for hotspot in hotspots:
@@ -50,9 +50,10 @@ def hotspotswriter(samplename, hotspots, bayesfactorthreshold=0):
 
             linker = "\t"
 
-            outstring = linker.join(bedlist) + "\n"
+            outstring = linker.join(bedlist)
 
-            open_bed.write(outstring)
+            # open_bed.write(outstring)
+            print(outstring, file=open_bed)
     else:
 
         for hotspot in hotspots:
@@ -66,7 +67,7 @@ def hotspotswriter(samplename, hotspots, bayesfactorthreshold=0):
 
                 outstring = linker.join(bedlist) + "\n"
 
-                open_bed.write(outstring)
+                print(outstring, file=open_bed)
 
     open_bed.close()
 
