@@ -200,7 +200,7 @@ def wigwritte(sampleinfors, kernellength, nthreads):
 
             # par['uniqreate'] = uniqreate
 
-            par['maxscore'] = maxscore
+            # par['maxscore'] = maxscore
 
             par['sampleinfor'] = sampleinfor
 
@@ -208,7 +208,7 @@ def wigwritte(sampleinfors, kernellength, nthreads):
 
             par['kernellength'] = kernellength
 
-            par['maxscore'] = maxscore/samplenormalizedratio
+            par['maxscore'] = maxscore*5/samplenormalizedratio
 
             pars.append(par)
 
