@@ -1,18 +1,8 @@
-from __future__ import division
-from __future__ import print_function
-import sys
 import logging
-import os
-from scipy.stats.mstats import *
 from optparse import OptionParser
-import pysam
-from Poperalib.FRegion import *
-from Poperalib.Hotspot import *
 from Poperalib.hotspotscount import *
-from Poperalib.bgcount import *
-# from Poperalib.peakcount import *
 from Poperalib.poperaio import *
-import re
+import os
 
 
 def main():
@@ -32,31 +22,17 @@ def nocontrol(opt):
 
     minlength = opt.minlength
 
-    # pvalue = opt.pvalue
-
-    # wig = opt.wig
-
     bayes = 0
-
-    # bayes = opt.bayes
-
-    # if bayes  > 0:
-
-        # print("use bayes test")
 
     nthreads = opt.nthreads
 
-    # initiallength = opt.initial
-
     samplename = opt.samplename
-
-    # gff = opt.gff
 
     windowsize = int(1e5)
 
     threshold = opt.threshold
 
-    wig = opt.wig
+    bigwig = opt.bigwig
 
     fregion = FRegion(bamfile=datafile,  countchr=countchr, nthreads=nthreads)
 
@@ -64,31 +40,20 @@ def nocontrol(opt):
                                         windowsize=windowsize, nthreads=nthreads, minlength=minlength,
                                         samplename=samplename, fregion=fregion, countchr=countchr)
 
-    # if bayes > 0:
-    #
-    #     hotspots = hotspots_bayes(bayesfactorthreshold=bayes, nthreads=nthreads, hotspots=hotspots,
-    #                               bamfile=datafile, fregion=fregion, exsize=5)
 
-    # for hotspot in hotspots:
-    #
-    #     print (hotspot.hotspotid, hotspot.bayescore)
-
-
-#######woking
 
     hotspotswriter(hotspots=hotspots, samplename=samplename, bayesfactorthreshold=bayes)
 
 
-####working
     sampleinfors = list()
 
     sampleinfor = Sampleinfor(samplename=samplename, datafile=datafile, fregion=fregion)
 
     sampleinfors.append(sampleinfor)
 
-    if wig:
+    if bigwig:
 
-        wigwritte(sampleinfors=sampleinfors, kernellength=bw, nthreads=nthreads)
+        bigwigwritte(sampleinfors=sampleinfors, kernellength=bw, nthreads=nthreads)
 
 
 def get_optparser():
@@ -99,7 +64,7 @@ def get_optparser():
 
     description = "%prog DNase I hypersensitive site identification"
 
-    poperaopt = OptionParser(version="%prog 0.03 20140519", description=description, usage=usage, add_help_option=False)
+    poperaopt = OptionParser(version="%prog 1.03 20140519", description=description, usage=usage, add_help_option=False)
 
     poperaopt.add_option("-h", "--help", action="help", help="show this help message and exit.")
 
@@ -122,7 +87,9 @@ def get_optparser():
 
     poperaopt.add_option("--threads", dest="nthreads", type="int", help="threads number or cpu number, default=4", default=4)
 
-    poperaopt.add_option("-w", "--wig", action="store_true", help="whether out put wiggle file, default=False", default=False)
+    #poperaopt.add_option("-w", "--wig", action="store_true", help="whether out put wiggle file, default=False", default=False)
+
+    poperaopt.add_option("--bigwig", action="store_true", help="whether out put bigwig file, default=False", default=False)
 
     # poperaopt.add_option("--bayes", dest="bayes", type="float", help="use bayes test, default=0", default=0)
 
@@ -167,34 +134,6 @@ def opt_check(poperaopt):
 
         sys.exit(1)
 
-    # if not opt.controlfile == "no":
-    #
-    #     if not os.path.isfile (opt.controlfile):
-    #
-    #         logging.error("No such file: %s" % opt.controlfile)
-    #
-    #         sys.exit(1)
-    #
-    #     controlindexfile = opt.controlfile + '.bai'
-    #
-    #     if not os.path.isfile (controlindexfile):
-    #
-    #         logging.error("Missing bam index file: %s" % controlindexfile)
-    #
-    #         sys.exit(1)
-    #
-    # else:
-    #
-    #     opt.controlfile = "no"
-
-    # if not (opt.pvalue > 0 and opt.pvalue < 1):
-    #
-    #     logging.error("pvalue should be a float between 0 and 1")
-    #
-    #     poperaopt.print_help()
-    #
-    #     sys.exit(1)
-    #
     if not (opt.bw > 1):
 
         logging.error("band width should be a int greater than 1")
@@ -202,14 +141,6 @@ def opt_check(poperaopt):
         poperaopt.print_help()
 
         sys.exit(1)
-    #
-    # if not (opt.initial >= 1 and opt.initial<=opt.minlength):
-    #
-    #     logging.error("peak initial length should be >1 and <minlength")
-    #
-    #     poperaopt.print_help()
-    #
-    #     sys.exit(1)
 
     if not (opt.nthreads > 0):
 
@@ -259,24 +190,6 @@ def opt_check(poperaopt):
 
                     j = j + 1
 
-    ### skip digital start chromosome
-    # k = 0
-    #
-    # digstart = re.compile('\-')
-    #
-    # for m in opt.countchr:
-    #
-    #     if digstart.match(m):
-    #
-    #         del opt.countchr[k]
-    #
-    #         print("skip chr:", m)
-    #
-    #     k = k + 1
-    #
-    # else:
-    #
-    #     pass
 
     return opt
 

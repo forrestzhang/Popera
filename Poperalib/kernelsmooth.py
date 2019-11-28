@@ -1,6 +1,6 @@
-from __future__ import division
-from countreads import *
-from kernel import *
+
+from .countreads import *
+from .kernel import *
 import numpy as np
 
 
