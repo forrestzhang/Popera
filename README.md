@@ -2,7 +2,7 @@
 
 ###DNase I hypersensitive sites identification
 
-####Dependncies:
+####Dependencies:
 
 **samtools http://samtools.sourceforge.net**
 

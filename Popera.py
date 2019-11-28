@@ -64,7 +64,7 @@ def get_optparser():
 
     description = "%prog DNase I hypersensitive site identification"
 
-    poperaopt = OptionParser(version="%prog 1.03 20140519", description=description, usage=usage, add_help_option=False)
+    poperaopt = OptionParser(version="%prog 1.03", description=description, usage=usage, add_help_option=False)
 
     poperaopt.add_option("-h", "--help", action="help", help="show this help message and exit.")
 
