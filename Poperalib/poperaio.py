@@ -9,6 +9,7 @@ from multiprocessing import Pool
 from .kernelsmooth import *
 from .kernel import *
 import numpy as np
+import pyBigWig
 
 
 class KeyboardInterruptError(Exception):
@@ -90,19 +91,6 @@ def mergedhotsportscountwrite(sampleinfors, mergedhotspots, nthreads, outfilenam
 
         pars = list()
 
-        # for hotspot in mergedhotspots:
-        #
-        #     outstr = hotspot.region
-        #
-        #     for sampleinfor in sampleinfors:
-        #
-        #         nowreads = dhsingleregioncounter(bamfile=sampleinfor.datafile, region=hotspot.region)
-        #
-        #         normailziedcount = nowreads/(hotspot.end-hotspot.start+1)/normalizedratio[sampleinfor.samplename]
-        #
-        #         outstr = outstr + "\t" + str(normailziedcount)
-        #
-        #     print(outstr, file=outfile)
         for hotspot in mergedhotspots:
 
             par = dict()
@@ -149,7 +137,64 @@ def mergedhotsportscountwrite(sampleinfors, mergedhotspots, nthreads, outfilenam
         #     print ('joining pool processes')
         pool.join()
 
+def singlehotsportcountwrite(sampleinfor,hotspots,nthreads):
 
+    try:
+
+        samplename = sampleinfor.samplename
+
+        outfile = open('%s_hotspot_count.txt'%samplename,'w')
+
+        print('location',samplename,sep='\t',file=outfile)
+
+        normalizedratio = normalizeratio(sampleinfors=[sampleinfor])
+
+        pars = []
+
+        for hotspot in hotspots:
+
+            par = dict()
+
+            par['hotspot'] = hotspot
+
+            par['sampleinfors'] = [sampleinfor]
+
+            par['normalizedratio'] = normalizedratio
+
+            pars.append(par)
+
+        pool = Pool(nthreads)
+
+        countinthreads = pool.map(hotspotscounter, pars)
+
+        for countstr in countinthreads:
+
+            print (countstr, file=outfile)
+
+        pool.close()
+
+        outfile.close()
+    
+    except KeyboardInterrupt:
+
+        pool.terminate()
+
+        print ("You cancelled the program!")
+
+        sys.exit(1)
+
+    except Exception as e:
+
+        print ('got exception: %r, terminating the pool' % (e,))
+
+        pool.terminate()
+
+        print ('pool is terminated')
+
+    finally:
+        #     print ('joining pool processes')
+        pool.join()
+    
 def hotspotscounter(par):
 
     try:
@@ -313,6 +358,158 @@ def wigwritter(par):
                     print (str(site)+"\t"+str(score), file=wigio)
 
         wigio.close()
+
+    except KeyboardInterrupt:
+
+        print ("You cancelled the program!")
+
+        sys.exit(1)
+
+def bigwigwritte(sampleinfors, kernellength, nthreads):
+
+    try:
+
+        normalizedratio = normalizeratio(sampleinfors=sampleinfors)
+
+        pars = list()
+
+        for sampleinfor in sampleinfors:
+
+            uniqreate = dhuniquerate(fregion=sampleinfor.fregion)
+
+            maxscore = dhnoncontrol(uniqueratio=uniqreate, threshold=50, kernellength=kernellength, nthreads=nthreads)
+
+            samplenormalizedratio = normalizedratio[sampleinfor.samplename]
+
+            par = dict()
+
+            # par['uniqreate'] = uniqreate
+
+            par['maxscore'] = maxscore
+
+            par['sampleinfor'] = sampleinfor
+
+            par['samplenormalizedratio'] = samplenormalizedratio
+
+            par['kernellength'] = kernellength
+
+            par['maxscore'] = maxscore/samplenormalizedratio
+
+            pars.append(par)
+
+        pool = Pool(nthreads)
+
+        pool.map(bigwigwritter, pars)
+
+        pool.close()
+
+    except KeyboardInterrupt:
+
+        pool.terminate()
+
+        print ("You cancelled the program!")
+
+        sys.exit(1)
+
+    except Exception as e:
+
+        print ('got exception: %r, terminating the pool' % (e,))
+
+        pool.terminate()
+
+        print ('pool is terminated')
+
+    finally:
+        #     print ('joining pool processes')
+        pool.join()
+
+
+def bigwigwritter(par):
+
+    try:
+        sampleinfor = par['sampleinfor']
+
+        kernellength = par['kernellength']
+
+        samplenormalizedratio = par['samplenormalizedratio']
+
+        kernellength = par['kernellength']
+
+        maxscore = par['maxscore']
+
+        bamfile = sampleinfor.datafile
+
+        bwfilename = sampleinfor.samplename+".bw"
+
+        #wigio = open(wigfilename, 'w')
+        bw = pyBigWig.open(bwfilename,'w')
+
+        bw.addHeader(list(sampleinfor.fregion.chrs_length.items()))
+
+        kernel = smooth_kernel(kernellength)
+
+        kernel_score = list()
+
+        for w in sorted(kernel):
+
+            kernel_score.append(kernel[w])
+
+        #print('track type=wiggle_0 name="',sampleinfor.samplename,'" description="', sampleinfor.samplename,'"',sep='',file=wigio)
+
+        for chromosome in sampleinfor.fregion.count_chr:
+
+            chromosome = str(chromosome)
+
+            #print('variableStep	chrom=', chromosome, sep='', file=wigio)
+
+            # chrregion = chromosome+":"+str(1)+"-"+str(sampleinfor.fregion.chrs_length[chromosome])
+            starts = []
+            values = []
+
+            for scare in range(0, int(sampleinfor.fregion.chrs_length[chromosome]/1000000)+1):
+
+                startsite = scare * 1000000 + 1
+
+                endsite = (scare + 1) * 1000000
+
+                if endsite > sampleinfor.fregion.chrs_length[chromosome]:
+
+                    endsite = sampleinfor.fregion.chrs_length[chromosome]
+
+                # print (chromosome,startsite,endsite)
+
+                # regionnow = chromosome+":" + str(startsite) + "-" + str(endsite)
+
+                smoothedscore = regionsmooth(bamfile=bamfile, regionchromosome=str(chromosome),
+                                             regionstart=startsite, regionend=endsite,
+                                             chr_length=sampleinfor.fregion.chrs_length[chromosome],
+                                             kernelsize=kernellength)
+
+                # print (smoothedscore['score'])
+
+                for site in sorted(smoothedscore['score'].keys()):
+
+                    # print (site, smoothedscore['score'][site])
+
+                    score = smoothedscore['score'][site]/samplenormalizedratio
+
+                    if score > maxscore:
+
+                        score = maxscore
+
+                    score = round(score, 3)
+
+                    starts.append(site)
+                    values.append(score)
+
+            bw.addEntries(chromosome, starts=starts, values=values,
+                      span=1, step=1)
+
+        bw.close()
+
+                    #print (str(site)+"\t"+str(score), file=wigio)
+
+        #wigio.close()
 
     except KeyboardInterrupt:
 
