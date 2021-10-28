@@ -3,7 +3,7 @@ from optparse import OptionParser
 from Poperalib.hotspotscount import *
 from Poperalib.poperaio import *
 import os
-
+from Poperalib.peakpvalue import *
 
 def main():
 
@@ -21,6 +21,12 @@ def nocontrol(opt):
     datafile = opt.datafile
 
     minlength = opt.minlength
+    
+    pvalue = opt.pvalue
+
+    initiallength = opt.initiallength
+
+    #mutype = opt.mutype
 
     bayes = 0
 
@@ -40,10 +46,12 @@ def nocontrol(opt):
                                         windowsize=windowsize, nthreads=nthreads, minlength=minlength,
                                         samplename=samplename, fregion=fregion, countchr=countchr)
 
+    pvaluehotspots = peakcount_nocontrol(hotspots=hotspots, pvalue=pvalue, bamfile=datafile, 
+                                        initiallength=initiallength, nthreads=nthreads, fregion=fregion,minlength=minlength)
 
+    hotspotswriter(hotspots=pvaluehotspots, samplename=samplename, bayesfactorthreshold=bayes)
 
-    hotspotswriter(hotspots=hotspots, samplename=samplename, bayesfactorthreshold=bayes)
-
+    narrowpeakwriter(hotspots=pvaluehotspots, samplename=samplename, bayesfactorthreshold=bayes)
 
     sampleinfors = list()
 
@@ -78,12 +86,13 @@ def get_optparser():
 
     poperaopt.add_option("-t", "--threshold", dest="threshold", type="float", help="Hot spots threshold, default=4.0", default=5.0)
 
-    poperaopt.add_option("-l", "--minlength", dest="minlength", type="int", help="minimum length of hot spots, default=5", default= 50)
+    poperaopt.add_option("-l", "--minlength", dest="minlength", type="int", help="minimum length of hot spots, default=50", default= 50)
 
-    # poperaopt.add_option("-p", "--pavlue", dest="pvalue", type="float", help="p-value cutoff for peak identification, default=0.05",
-    #                   default=0.01)
+    poperaopt.add_option("-p", "--pavlue", dest="pvalue", type="float", help="p-value cutoff for peak identification, default=0.05",default=0.05)
+    
+    poperaopt.add_option("-i", "--initiallength", dest="initiallength", type="int", help="Peak's initial length, >1 and <minlength, default=25", default=25)
 
-    # poperaopt.add_option("-i", "--initial", dest="initial", type="int", help="Peak's initial length, >1 and <minlength, default=5", default=5)
+    #poperaopt.add_option("--mutype", dest="mutype", help="the lambda type for Poisson pvalue. such as avg, flank, max and min", type="string" , default="max")
 
     poperaopt.add_option("--threads", dest="nthreads", type="int", help="threads number or cpu number, default=4", default=4)
 

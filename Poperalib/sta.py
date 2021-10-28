@@ -56,3 +56,41 @@ def fdr(pnow, plist, prank):
             break
 
     return fdr
+
+def fdr_bh(peaks):
+
+    b01s = list()
+
+    peakscores = list()
+
+    for peak in peaks:
+
+        b01 = 1/(math.e**(peak.score/2))
+
+        peakscores.append(peak.score)
+
+        b01s.append(b01)
+
+    sortedb01s = sorted(b01s,reverse=True)
+
+    listlength = len(sortedb01s)
+
+    for peak in peaks:
+
+        b01 = 1/(math.e**(peak.score/2))
+
+        rank = 1
+
+        for i in range(0,listlength):
+
+            if sortedb01s[i] == b01:
+
+                rank = i + 1
+
+                break
+
+        fdr = b01*listlength/rank
+
+        peak.fdr = fdr
+
+    return peaks

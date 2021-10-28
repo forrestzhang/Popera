@@ -47,7 +47,8 @@ def hotspotswriter(samplename, hotspots, bayesfactorthreshold=0):
         for hotspot in hotspots:
 
             #bedlist = [str(hotspot.chromosome), str(hotspot.start), str(hotspot.end), hotspot.hotspotid]
-            bedlist = [str(hotspot.chromosome), str(hotspot.start), str(hotspot.end)]
+            
+            bedlist = [str(hotspot.chromosome), str(hotspot.start), str(hotspot.end), hotspot.peakid, str(hotspot.pvalue),'.']
 
             linker = "\t"
 
@@ -62,7 +63,7 @@ def hotspotswriter(samplename, hotspots, bayesfactorthreshold=0):
             #bedlist = [str(hotspot.chromosome), str(hotspot.start), str(hotspot.end), hotspot.hotspotid]
             if hotspot.bayescore >= bayesfactorthreshold:
 
-                bedlist = [str(hotspot.chromosome), str(hotspot.start), str(hotspot.end), hotspot.hotspotid, str(hotspot.bayescore)]
+                bedlist = [str(hotspot.chromosome), str(hotspot.start), str(hotspot.end), hotspot.peakid, str(hotspot.bayescore),float(hotspot.pvalue)]
 
                 linker = "\t"
 
@@ -72,6 +73,27 @@ def hotspotswriter(samplename, hotspots, bayesfactorthreshold=0):
 
     open_bed.close()
 
+def narrowpeakwriter(samplename, hotspots, bayesfactorthreshold=0):
+
+    bedfilename =samplename+ '_' + 'hotspots' + ".narrowPeak"
+
+    # open_bed = io.FileIO(bedfilename, 'w')
+    open_bed = open(bedfilename, 'w')
+    if bayesfactorthreshold == 0:
+
+        for hotspot in hotspots:
+
+            #bedlist = [str(hotspot.chromosome), str(hotspot.start), str(hotspot.end), hotspot.hotspotid]
+            
+            bedlist = [str(hotspot.chromosome), str(hotspot.start), str(hotspot.end), hotspot.peakid, str(hotspot.pvalue),'.','-1',str(hotspot.pvalue),'-1','-1']
+
+            linker = "\t"
+
+            outstring = linker.join(bedlist)
+
+            # open_bed.write(outstring)
+            print(outstring, file=open_bed)
+    open_bed.close()
 
 def mergedhotsportscountwrite(sampleinfors, mergedhotspots, nthreads, outfilename="merged_hotsopts_count.txt"):
 
