@@ -58,7 +58,7 @@ $ python Popera.py -d DNase.bam -n DNase --bigwig --threads 8
   </tr>
   <tr>
     <td>2. chromStart</td>
-    <td>Starting position of the peak (0-based)</td>
+    <td>Starting position of the peak</td>
   </tr>
   <tr>
     <td>3. chromEnd</td>
