@@ -217,3 +217,125 @@ def ultratio(fregion, uniqreate):
 
     return ultratio
 
+def get_bpc(bamfile,  hotspots, filted_region, nthreads, maxinsert = 100000):
+
+    #bpc average readscount per basepare
+
+    # total_reads = 0
+    #
+    total_length = 0
+    #
+    # samfile = pysam.Samfile(bamfile)
+
+    pars = list()
+
+    for hotspot_now in hotspots:
+
+        par = dict()
+
+        par['bamfile'] = bamfile
+
+        par['hotspot'] = hotspot_now
+
+        par['filted_region'] = filted_region
+
+        par['maxinsert'] = maxinsert
+
+        pars.append(par)
+
+        total_length = hotspot_now.end - hotspot_now.start + 1 + total_length
+
+
+    # print ("total length %s" % total_length)
+
+    pool = Pool(nthreads)
+
+    try:
+
+        reads_count = pool.map(bpc_runner, pars)
+
+        total_reads = 0.0
+
+        for count_now in reads_count:
+
+            total_reads = total_reads + count_now
+
+        bpc = (total_reads+0.0)/total_length
+
+        pool.close()
+
+        return bpc
+
+    except KeyboardInterrupt:
+
+        pool.terminate()
+
+        print ("You cancelled the program!")
+
+        sys.exit(1)
+
+    except Exception as e:
+
+        print ('got exception: %r, terminating the pool' % (e,))
+
+        pool.terminate()
+
+        print ('pool is terminated')
+
+    finally:
+        # print ('joining pool processes')
+        pool.join()
+        # print ('join complete')
+
+
+def bpc_runner(par):
+
+    try:
+
+        bamfile = par['bamfile']
+
+        hotspot = par['hotspot']
+
+        filted_region = par['filted_region']
+
+        maxinsert = par['maxinsert']
+
+        start_site = hotspot.start
+
+        end_site = hotspot.end
+
+        whether_in_fr = 0
+
+        chromosome = hotspot.chromosome
+
+        #hotspotregio = chromosome + ':' + str(start_site) + '-' + str(end_site)
+
+        hotspotreads = 0
+
+        for i in range(start_site, end_site + 1):
+
+            parentscare = int(i/100)
+
+            if chromosome in filted_region:
+
+                if parentscare in filted_region[chromosome]:
+
+                    whether_in_fr = 1
+
+        if whether_in_fr == 0:
+
+            readscount = dict()
+
+            readscount = dhsinglereadscounter(bamfile = bamfile, regionchromosome = chromosome, 
+                                              regionstart = start_site, regionend = end_site)
+
+            for i in readscount:
+
+                hotspotreads = hotspotreads+readscount[i]
+
+        # print (hotspotreads)
+        return hotspotreads
+
+    except KeyboardInterrupt:
+
+        raise KeyboardInterruptError()

@@ -1,13 +1,10 @@
-from .sta import fdr
-
-
-class Peak:
+class Peakpvalue:
     """
         Peaks
     
     """    
    
-    def __init__(self, start, end, chromosome, parent, pvalue, peakpoint, peakid, score,fdr):
+    def __init__(self, start, end, chromosome, parent, pvalue, peakpoint, peakid):
 
         self.start = start
 
@@ -22,9 +19,3 @@ class Peak:
         self.peakpoint = peakpoint
 
         self.peakid = peakid
-
-        self.score = score
-
-        self.fdr = fdr
-
-
